@@ -17,9 +17,25 @@ html_code = """
         text-align: center;
         margin-top: 10px;
       }
+      #downloadBtnContainer {
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        text-align: center;
+        background-color: white;
+        padding: 10px;
+        display: none; /* 초기에는 숨김 */
+        z-index: 999; /* 다른 요소 위에 표시되도록 */
+      }
       #downloadBtn {
-        display: none;
-        margin-left: 10px;
+        padding: 8px 16px;
+        background-color: #4CAF50; /* 원하는 색상 */
+        color: white;
+        text-decoration: none;
+        border-radius: 4px;
+      }
+      #downloadBtn:hover {
+        background-color: #45a049;
       }
     </style>
   </head>
@@ -28,7 +44,9 @@ html_code = """
     <canvas id="canvas" style="display: none;"></canvas>
     <div id="button-container">
       <button id="captureBtn">사진 찍기</button>
-      <!-- 여기서 버튼을 <a> 태그로 변경 -->
+    </div>
+    <!-- 다운로드 버튼 컨테이너를 추가 -->
+    <div id="downloadBtnContainer">
       <a id="downloadBtn">다운로드</a>
     </div>
   </body>
@@ -38,6 +56,7 @@ html_code = """
     var canvas = document.getElementById("canvas");
     var captureBtn = document.getElementById("captureBtn");
     var downloadBtn = document.getElementById("downloadBtn");
+    var downloadBtnContainer = document.getElementById("downloadBtnContainer");
 
     if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia )
     {
@@ -71,15 +90,13 @@ html_code = """
       context.drawImage(cameraView, 0, 0, canvas.width, canvas.height);
 
       // 캡처된 이미지를 다운로드 버튼에 연결
-      canvas.toBlob(function(blob) {
-        var url = URL.createObjectURL(blob);
-        downloadBtn.href = url;
-        downloadBtn.download = 'captured_image.png';
-        downloadBtn.style.display = "inline-block";
-      }, 'image/png');
+      var dataURL = canvas.toDataURL('image/png');
+      downloadBtn.href = dataURL;
+      downloadBtn.download = 'captured_image.png';
+      downloadBtnContainer.style.display = "block"; // 다운로드 버튼 컨테이너를 표시
     });
   </script>
 </html>
 """
 
-st.components.v1.html(html_code, height=700)
+st.components.v1.html(html_code, height=800)
