@@ -14,17 +14,32 @@ html_code = """
         margin: 0;
         padding: 0;
         height: 100%;
-        overflow: hidden;
       }
-      #cameraview {
+
+      /* 컨테이너 스타일 */
+      #camera-container {
+        width: 100%;
+        max-width: 600px; /* 최대 너비를 원하는 크기로 설정 */
+        margin: 0 auto;
+        position: relative;
+      }
+
+      /* 카메라 미리보기 및 캡처된 이미지 스타일 */
+      #cameraview, #capturedImage {
+        width: 100%;
+        height: auto;
+        object-fit: cover;
+      }
+
+      /* 캡처된 이미지 위치 조절 */
+      #capturedImage {
         position: absolute;
         top: 0;
         left: 0;
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        z-index: 1;
+        display: none;
       }
+
+      /* 버튼 컨테이너 스타일 */
       #button-container {
         position: fixed;
         bottom: 20px;
@@ -34,6 +49,7 @@ html_code = """
         align-items: center;
         z-index: 2;
       }
+
       #button-container button {
         margin: 0 10px;
         padding: 15px 25px;
@@ -44,24 +60,17 @@ html_code = """
         color: white;
         cursor: pointer;
       }
+
       #button-container button:active {
         background-color: #0056b3;
-      }
-      #capturedImage {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        display: none;
-        z-index: 1;
       }
     </style>
   </head>
   <body>
-    <video id="cameraview" autoplay playsinline></video>
-    <img id="capturedImage" />
+    <div id="camera-container">
+      <video id="cameraview" autoplay playsinline></video>
+      <img id="capturedImage" />
+    </div>
     <div id="button-container">
       <button id="captureBtn">사진 찍기</button>
       <button id="downloadBtn" style="display: none;">다운로드</button>
@@ -113,10 +122,17 @@ html_code = """
     }
 
     captureBtn.addEventListener('click', () => {
-      canvas.width = cameraView.videoWidth;
-      canvas.height = cameraView.videoHeight;
+      // 원하는 해상도 설정
+      const desiredWidth = 800;  // 원하는 너비 (픽셀 단위)
+      const desiredHeight = 600; // 원하는 높이 (픽셀 단위)
+
+      // 캔버스 크기 설정
+      canvas.width = desiredWidth;
+      canvas.height = desiredHeight;
+
       var context = canvas.getContext('2d');
-      context.drawImage(cameraView, 0, 0, canvas.width, canvas.height);
+      // 카메라 영상을 캔버스에 그리기 (크기 조절 포함)
+      context.drawImage(cameraView, 0, 0, desiredWidth, desiredHeight);
 
       // 이미지 데이터 저장
       capturedImageDataURL = canvas.toDataURL('image/png');
@@ -153,4 +169,4 @@ html_code = """
 """
 
 # height 파라미터를 적절히 설정하여 컴포넌트 높이 조절
-st.components.v1.html(html_code, height=600)
+st.components.v1.html(html_code, height=700)
