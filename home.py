@@ -17,6 +17,10 @@ html_code = """
         text-align: center;
         margin-top: 10px;
       }
+      #downloadBtn {
+        display: none;
+        margin-left: 10px;
+      }
     </style>
   </head>
   <body>
@@ -24,7 +28,8 @@ html_code = """
     <canvas id="canvas" style="display: none;"></canvas>
     <div id="button-container">
       <button id="captureBtn">사진 찍기</button>
-      <button id="downloadBtn" style="display: none;">다운로드</button>
+      <!-- 여기서 버튼을 <a> 태그로 변경 -->
+      <a id="downloadBtn">다운로드</a>
     </div>
   </body>
   <script>
@@ -70,7 +75,7 @@ html_code = """
         var url = URL.createObjectURL(blob);
         downloadBtn.href = url;
         downloadBtn.download = 'captured_image.png';
-        downloadBtn.style.display = "inline";
+        downloadBtn.style.display = "inline-block";
       }, 'image/png');
     });
   </script>
