@@ -9,7 +9,7 @@ html_code = """
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-      video, canvas {
+      video, canvas, img {
         width: 100%;
         max-width: 100%;
       }
@@ -17,25 +17,10 @@ html_code = """
         text-align: center;
         margin-top: 10px;
       }
-      #downloadBtnContainer {
-        position: fixed;
-        bottom: 0;
-        width: 100%;
+      #message {
         text-align: center;
-        background-color: white;
-        padding: 10px;
-        display: none; /* 초기에는 숨김 */
-        z-index: 999; /* 다른 요소 위에 표시되도록 */
-      }
-      #downloadBtn {
-        padding: 8px 16px;
-        background-color: #4CAF50; /* 원하는 색상 */
-        color: white;
-        text-decoration: none;
-        border-radius: 4px;
-      }
-      #downloadBtn:hover {
-        background-color: #45a049;
+        margin-top: 10px;
+        font-size: 16px;
       }
     </style>
   </head>
@@ -45,9 +30,9 @@ html_code = """
     <div id="button-container">
       <button id="captureBtn">사진 찍기</button>
     </div>
-    <!-- 다운로드 버튼 컨테이너를 추가 -->
-    <div id="downloadBtnContainer">
-      <a id="downloadBtn">다운로드</a>
+    <img id="capturedImage" style="display: none; margin-top: 10px;" />
+    <div id="message" style="display: none;">
+      이미지를 길게 눌러 저장하세요.
     </div>
   </body>
   <script>
@@ -55,8 +40,8 @@ html_code = """
     var cameraView = document.getElementById("cameraview");
     var canvas = document.getElementById("canvas");
     var captureBtn = document.getElementById("captureBtn");
-    var downloadBtn = document.getElementById("downloadBtn");
-    var downloadBtnContainer = document.getElementById("downloadBtnContainer");
+    var capturedImage = document.getElementById("capturedImage");
+    var message = document.getElementById("message");
 
     if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia )
     {
@@ -83,17 +68,17 @@ html_code = """
     }
 
     captureBtn.addEventListener('click', () => {
-      canvas.style.display = "block";
+      canvas.style.display = "none";
       var context = canvas.getContext('2d');
       canvas.width = cameraView.videoWidth;
       canvas.height = cameraView.videoHeight;
       context.drawImage(cameraView, 0, 0, canvas.width, canvas.height);
 
-      // 캡처된 이미지를 다운로드 버튼에 연결
+      // 캡처된 이미지를 이미지 태그에 표시
       var dataURL = canvas.toDataURL('image/png');
-      downloadBtn.href = dataURL;
-      downloadBtn.download = 'captured_image.png';
-      downloadBtnContainer.style.display = "block"; // 다운로드 버튼 컨테이너를 표시
+      capturedImage.src = dataURL;
+      capturedImage.style.display = "block";
+      message.style.display = "block";
     });
   </script>
 </html>
