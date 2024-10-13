@@ -1,0 +1,229 @@
+<!-- src/camera/camera.html -->
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* src/camera/css/style.css 내용 */
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+        }
+
+        /* 카메라 컨테이너 스타일 수정 */
+        #camera-container {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            position: relative;
+            aspect-ratio: 4 / 4;
+            overflow: hidden;
+        }
+
+        /* 카메라 뷰 및 캡처된 이미지 스타일 수정 */
+        #cameraview,
+        #capturedImage {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* 캡처된 이미지 위치 조절 */
+        #capturedImage {
+            position: absolute;
+            top: 0;
+            left: 0;
+            display: none;
+        }
+
+        #captureBtn,
+        #retakeBtn {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2;
+            background: none;
+            border: none;
+            cursor: pointer;
+            /* background-color: white; */
+        }
+
+        #captureBtn img,
+        #retakeBtn img {
+            width: 40px;
+            height: 40px;
+        }
+
+        #retakeBtn {
+            display: none;
+        }
+
+        /* 버튼 컨테이너 스타일 */
+        /* #button-container button {
+            position: absolute;
+            bottom: 300px;
+            width: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2;
+        } */
+
+        /* #button-container button {
+            margin: 0 10px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            background-color: none;
+            color: white;
+            cursor: pointer;
+        } */
+
+        #captureBtn button img {
+            width: 10px;
+            height: 10px;
+        }
+
+        #captureBtn button:active {
+            background-color: grey;
+        }
+
+        #response {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 18px;
+            color: green;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="camera-container">
+
+        <video id="cameraview" autoplay playsinline></video>
+        <img id="capturedImage" />
+
+        <button id="captureBtn">
+            <img src="https://github.com/bermmie1000/img/blob/main/capture.png?raw=true" alt="Capture">
+        </button>
+
+        <button id="retakeBtn" style="display: none;">
+            <img src="https://github.com/bermmie1000/img/blob/main/re_capture.png?raw=true" alt="Retake">
+        </button>
+
+    </div>
+    <canvas id="canvas" style="display: none;"></canvas>
+    <div id="response"></div>
+
+    <script>
+        var streamVideo;
+        var cameraView = document.getElementById("cameraview");
+        var capturedImage = document.getElementById("capturedImage");
+
+        var canvas = document.getElementById("canvas");
+
+        var responseDiv = document.getElementById("response");
+
+        var captureBtn = document.getElementById("captureBtn");
+        var retakeBtn = document.getElementById("retakeBtn");
+
+        let imageCapture;
+        let track;
+
+        const uuid = "{{uuid}}";
+        const api_url = "{{api_url}}";
+
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            alert("Media Device not supported");
+        } else {
+            openCamera();
+        }
+
+
+        function openCamera() {
+            navigator.mediaDevices.getUserMedia({
+                video: {
+                    width: { ideal: 3840 },
+                    height: { ideal: 2160 },
+                    aspectRatio: 4 / 4, // 비율 명시
+                    facingMode: { ideal: "environment" }
+                },
+                audio: false
+            }).then(stream => {
+                streamVideo = stream;
+                cameraView.srcObject = stream;
+                track = stream.getVideoTracks()[0];
+                imageCapture = new ImageCapture(track);
+            }).catch(error => {
+                console.error("Device's Camera Access Error:", error);
+                // alert("카메라에 접근할 수 없습니다.");
+            });
+        }
+
+
+        function sendFormDataToAPI(formData) {
+            fetch(`${api_url}/object_detection`, {
+                method: 'POST',
+                body: formData // data to post
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data);
+                    responseDiv.innerText = data.item_code;
+                })
+                .catch(error => {
+                    console.error('API request failed:', error);
+                    responseDiv.innerText = 'API request failed';
+                });
+        }
+
+
+        captureBtn.addEventListener('click', () => {
+            const desiredWidth = cameraView.videoWidth; // 비디오의 실제 너비 가져오기
+            const desiredHeight = cameraView.videoHeight; // 비디오의 실제 높이 가져오기
+
+            canvas.width = desiredWidth;
+            canvas.height = desiredHeight;
+
+            var context = canvas.getContext('2d');
+            context.drawImage(cameraView, 0, 0, desiredWidth, desiredHeight);
+
+
+            canvas.toBlob((blob) => {
+                capturedImage.src = URL.createObjectURL(blob);
+                capturedImage.style.display = 'block';
+                captureBtn.style.display = 'none';
+                retakeBtn.style.display = 'inline-block';
+
+                const formData = new FormData();
+
+                formData.append('uuid', uuid);
+                formData.append('picture', blob, 'captured_image.png');
+
+                sendFormDataToAPI(formData);
+            });
+        });
+
+
+        retakeBtn.addEventListener('click', () => {
+            capturedImage.style.display = 'none';
+            captureBtn.style.display = 'inline-block';
+            retakeBtn.style.display = 'none';
+            responseDiv.innerText = '';
+        });
+
+    </script>
+
+</body>
+
+</html>
