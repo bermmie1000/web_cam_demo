@@ -166,13 +166,6 @@
                 imageCapture = new ImageCapture(track);
             }).catch(error => {
                 console.error("Device's Camera Access Error:", error);
-
-                responseDiv.innerText = "Unable to access the camera. Please verify your camera permission settings.";
-                responseDiv.style.color = "red";
-                responseDiv.style.fontSize = "18px";
-                responseDiv.style.fontWeight = "bold";
-                responseDiv.style.fontFamily = "Arial, sans-serif";
-
                 captureBtn.disabled = true;
             });
         }
