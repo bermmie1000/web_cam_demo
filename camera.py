@@ -27,11 +27,11 @@ def camera_module():
 
     get_camera_input_and_post_image(uuid, api_url)
 
-    item_code = None
-    while item_code is None:
-        item_code = get_object_detection_response(uuid, api_url)
+    # detect_result = None
+    # while detect_result is None:
+    st.session_state.detect_result = get_object_detection_response(uuid, api_url)
 
-        st.session_state.detect_result = item_code
+    # st.session_state.detect_result = detect_result
 
 
 def _generate_uuid():
