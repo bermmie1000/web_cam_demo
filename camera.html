@@ -200,6 +200,7 @@
                 .then(data => {
                     console.log(data);
                     responseDiv.innerText = data.item_code;
+                    retakeBtn.disabled = false;
 
                 })
                 .catch(error => {
