@@ -168,6 +168,13 @@
                 cameraView.addEventListener('click', () => {
                     const capabilities = track.getCapabilities();
                     if (capabilities.focusMode && capabilities.focusMode.includes('continuous')) {
+
+                        // 포커싱 중임을 알리기 위해 테두리 깜빡임 효과 추가
+                        cameraView.style.border = '2px solid yellow';
+                        setTimeout(() => {
+                            cameraView.style.border = 'none';
+                        }, 500); // 0.5초 후 테두리 제거
+
                         track.applyConstraints({
                             advanced: [{ focusMode: 'continuous' }]
                         }).then(() => {
@@ -188,7 +195,7 @@
 
 
         function sendFormDataToAPI(formData) {
-            responseDiv.innerText = 'Please wait, searching for matching product...';
+            responseDiv.innerText = '🚀 Please wait...!\nSearching for matching product.';
 
             retakeBtn.disabled = true;
 
@@ -198,15 +205,16 @@
             })
                 .then(response => response.json())
                 .then(data => {
-                    console.log(data);
-                    responseDiv.innerText = data.item_code;
                     retakeBtn.disabled = false;
+                    console.log(data);
 
+                    responseDiv.innerText = data.item_code;
                 })
                 .catch(error => {
-                    console.error('API request failed:', error);
-                    responseDiv.innerText = 'Please ensure the nameplate is fully captured.';
                     retakeBtn.disabled = false;
+                    console.error('API request failed:', error);
+
+                    responseDiv.innerText = 'Please ensure the nameplate is fully captured.';
                 });
         }
 
