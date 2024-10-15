@@ -188,6 +188,9 @@
 
 
         function sendFormDataToAPI(formData) {
+            responseDiv.innerText = 'Please wait, image processing...';
+
+
             fetch(`${api_url}/object_detection`, {
                 method: 'POST',
                 body: formData // data to post
@@ -199,7 +202,7 @@
                 })
                 .catch(error => {
                     console.error('API request failed:', error);
-                    responseDiv.innerText = 'API request failed';
+                    responseDiv.innerText = 'Image processing failed, please try again.';
                 });
         }
 
