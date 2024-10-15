@@ -155,8 +155,8 @@
                 video: {
                     width: { ideal: 3840 },
                     height: { ideal: 2160 },
-                    aspectRatio: 4 / 4, // 비율 명시
-                    facingMode: { ideal: "environment" }
+                    aspectRatio: 4 / 4, // 카메라 화면 비율
+                    facingMode: { ideal: "environment" } // 후면 카메라 사용
                 },
                 audio: false
             }).then(stream => {
@@ -167,14 +167,8 @@
 
                 cameraView.addEventListener('click', () => {
                     const capabilities = track.getCapabilities();
+
                     if (capabilities.focusMode && capabilities.focusMode.includes('continuous')) {
-
-                        // 포커싱 중임을 알리기 위해 테두리 깜빡임 효과 추가
-                        cameraView.style.border = '2px solid yellow';
-                        setTimeout(() => {
-                            cameraView.style.border = 'none';
-                        }, 500); // 0.5초 후 테두리 제거
-
                         track.applyConstraints({
                             advanced: [{ focusMode: 'continuous' }]
                         }).then(() => {
@@ -186,8 +180,6 @@
                         console.log('Automatic focus adjustment is not supported on this device.');
                     }
                 });
-
-
             }).catch(error => {
                 console.error("Device's Camera Access Error:", error);
             });
@@ -195,23 +187,30 @@
 
 
         function sendFormDataToAPI(formData) {
-            responseDiv.innerText = '🚀 Please wait...!\nSearching for matching product.';
-
             retakeBtn.disabled = true;
+            retakeBtn.style.display = 'none';
+
+            responseDiv.innerText = '🚀 Please wait...!\nSearching for matching product.';
 
             fetch(`${api_url}/object_detection`, {
                 method: 'POST',
                 body: formData // data to post
             })
                 .then(response => response.json())
+
                 .then(data => {
                     retakeBtn.disabled = false;
+                    retakeBtn.style.display = 'inline-block';
+
                     console.log(data);
 
                     responseDiv.innerText = data.item_code;
                 })
+
                 .catch(error => {
                     retakeBtn.disabled = false;
+                    retakeBtn.style.display = 'inline-block';
+
                     console.error('API request failed:', error);
 
                     responseDiv.innerText = 'Please ensure the nameplate is fully captured.';
