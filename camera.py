@@ -5,7 +5,7 @@ import requests
 
 import streamlit as st
 
-sys.path.append("../productlens_pilot")
+sys.path.append("../web_cam_demo")
 
 
 def _init_session_state():
@@ -27,7 +27,11 @@ def camera_module():
 
     get_camera_input_and_post_image(uuid, api_url)
 
-    st.session_state.detect_result = get_object_detection_response(uuid, api_url)
+    item_code = None
+    while item_code is None:
+        item_code = get_object_detection_response(uuid, api_url)
+
+        st.session_state.detect_result = item_code
 
 
 def _generate_uuid():
@@ -39,7 +43,7 @@ def get_camera_input_and_post_image(uuid: str, api_url: str):
     카메라 입력을 받습니다.
     - 카메라 입력을 받는 코드를 작성합니다.
     """
-    html_code = _load_html("camera.html")
+    html_code = _load_html("src/camera/camera.html")
     html_code = html_code.replace("{{uuid}}", uuid)
     html_code = html_code.replace("{{api_url}}", api_url)
 
