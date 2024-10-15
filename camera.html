@@ -204,7 +204,11 @@
 
                     console.log(data);
 
-                    responseDiv.innerText = data.item_code;
+                    if (data.item_code) {
+                        responseDiv.innerText = data.item_code;
+                    } else {
+                        responseDiv.innerText = 'Please ensure the nameplate is fully captured.';
+                    }
                 })
 
                 .catch(error => {
@@ -213,7 +217,7 @@
 
                     console.error('API request failed:', error);
 
-                    responseDiv.innerText = 'Please ensure the nameplate is fully captured.';
+                    responseDiv.innerText = 'Please try again.\nServer is busy.';
                 });
         }
 
