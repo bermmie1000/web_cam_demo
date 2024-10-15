@@ -43,7 +43,7 @@ def get_camera_input_and_post_image(uuid: str, api_url: str):
     카메라 입력을 받습니다.
     - 카메라 입력을 받는 코드를 작성합니다.
     """
-    html_code = _load_html("src/camera/camera.html")
+    html_code = _load_html("camera.html")
     html_code = html_code.replace("{{uuid}}", uuid)
     html_code = html_code.replace("{{api_url}}", api_url)
 
