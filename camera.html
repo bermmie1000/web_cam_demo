@@ -207,7 +207,13 @@
                     if (data.item_code) {
                         responseDiv.innerText = data.item_code;
                     } else {
-                        responseDiv.innerText = 'Please ensure the nameplate is fully captured.';
+                        responseDiv.innerText = 'Is your scan not working?';
+                        responseDiv.innerText += 'Please make sure to check the following.';
+                        responseDiv.innerText += '\n';
+                        responseDiv.innerText += '\n1. Ensure the entire nameplate is clearly visible in the frame.';
+                        responseDiv.innerText += '\n2. Remove any obstructions or dirt from the nameplate, especially around the text and barcode.';
+                        responseDiv.innerText += '\n3. Verify that the image is sharp and in focus.';
+                        responseDiv.innerText += '\n4. Clean the camera lens to avoid any blurriness.';
                     }
                 })
 
