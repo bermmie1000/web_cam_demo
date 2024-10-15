@@ -164,9 +164,25 @@
                 cameraView.srcObject = stream;
                 track = stream.getVideoTracks()[0];
                 imageCapture = new ImageCapture(track);
+
+                cameraView.addEventListener('click', () => {
+                    const capabilities = track.getCapabilities();
+                    if (capabilities.focusMode && capabilities.focusMode.includes('continuous')) {
+                        track.applyConstraints({
+                            advanced: [{ focusMode: 'continuous' }]
+                        }).then(() => {
+                            console.log('Focus adjusted automatically.');
+                        }).catch(error => {
+                            console.error('Failed to adjust focus:', error);
+                        });
+                    } else {
+                        console.log('Automatic focus adjustment is not supported on this device.');
+                    }
+                });
+
+
             }).catch(error => {
                 console.error("Device's Camera Access Error:", error);
-                captureBtn.disabled = true;
             });
         }
 
