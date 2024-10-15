@@ -190,6 +190,7 @@
         function sendFormDataToAPI(formData) {
             responseDiv.innerText = 'Please wait, searching for matching product...';
 
+            retakeBtn.disabled = true;
 
             fetch(`${api_url}/object_detection`, {
                 method: 'POST',
@@ -199,10 +200,12 @@
                 .then(data => {
                     console.log(data);
                     responseDiv.innerText = data.item_code;
+
                 })
                 .catch(error => {
                     console.error('API request failed:', error);
                     responseDiv.innerText = 'Please ensure the nameplate is fully captured.';
+                    retakeBtn.disabled = false;
                 });
         }
 
